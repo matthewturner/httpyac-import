@@ -2,10 +2,10 @@
   "name": "postman2httpyac",
   "version": "0.1.0",
   "description": "CLI to convert postman collection to httpyac file",
-  "main": "parse.js",
+  "main": "main.ts",
   "scripts": {
     "test": "echo \"Error: no test specified. SHAME! SHAME! SHAME!\" && exit 1",
-    "run": "node parse.js"
+    "run": "ts-node main.ts"
   },
   "keywords": [
     "postman",
@@ -19,5 +19,10 @@
   "license": "ISC",
   "dependencies": {
     "postman-collection": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/postman-collection": "^3.5.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
   }
 }

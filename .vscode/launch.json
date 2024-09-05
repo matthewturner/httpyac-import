@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "args": [],
+            "cwd": "${workspaceRoot}",
+            "name": "Debug",
+            "program": "${workspaceRoot}/src/app.ts",
+            "request": "launch",
+            "runtimeArgs": [
+            ],
+            "runtimeExecutable": "ts-node",
+            "sourceMaps": true,
+            "stopOnEntry": false,
+            "type": "node"
+        }
+    ]
+}

@@ -9,7 +9,7 @@ Collection = require('postman-collection').Collection,
 const repl = require('repl');
 
 // Load a collection to memory from a JSON file on disk (say, sample-collection.json)
-myCollection = new Collection(JSON.parse(fs.readFileSync('collection.json').toString()));
+myCollection = new Collection(JSON.parse(fs.readFileSync('..\\Eris.Compose\\postman\\Eris.postman_collection.json').toString()));
 
 // log items at root level of the collection
 
@@ -29,12 +29,17 @@ myCollection.items.each(function(item) {
     // console.log(item);
 
     item.items.each(function(member) {
-      var request = member.request,
-      prerequest = member.events.members.find((event) => (event.listen == 'prerequest')),
-      test = member.events.members.find((event) => (event.listen == 'test'));
+      var request = member.request;
+      var prerequest = member.events.members.find((event) => (event.listen == 'prerequest'));
+      var test = member.events.members.find((event) => (event.listen == 'test'));
 
       console.log(`### ${member.name}`);
       console.log(`# @name request${cnt}`);
+
+      if (request === undefined) {
+        return;
+      }
+
       if(prerequest && prerequest.script.exec[0] != '') {
         console.log(`{{\n${prerequest.script.exec.join("\n")}\n}}\n`);
       }
@@ -58,5 +63,4 @@ myCollection.items.each(function(item) {
       // console.log(member);
       // throw '';
     })
-
 })
