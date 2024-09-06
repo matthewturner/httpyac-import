@@ -35,12 +35,17 @@ function processItem(item : Item) {
     const directory = join(...destinationPaths);
 
     if (!existsSync(directory)) {
+        console.log(`Creating directory ${directory}...`);
         mkdirSync(directory, { recursive: true });
     }
 
-    const path = join(directory, `${sanitize(item.name)}.http`);
+    const filename = `${sanitize(item.name)}.http`;
+    console.log(`Creating file ${filename}...`);
+    const path = join(directory, filename);
 
+    console.log('Writing request definition...');
     const requestDefinition = requestDefinitionFrom(item);
+    console.log(requestDefinition);
 
     writeFileSync(path, requestDefinition, { flag: 'w' });
 }
