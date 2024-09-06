@@ -18,7 +18,8 @@
   "author": "Tobias Bielohlawek",
   "license": "ISC",
   "dependencies": {
-    "postman-collection": "^4.1.0"
+    "postman-collection": "^4.1.0",
+    "ts-command-line-args": "^2.5.1"
   },
   "devDependencies": {
     "@types/postman-collection": "^3.5.10",

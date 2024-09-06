@@ -1,17 +1,43 @@
 import { writeFileSync, readFileSync } from 'fs';
-import { Collection } from 'postman-collection';
+import { Collection, ItemGroup, Item, PropertyList } from 'postman-collection';
+import { parse } from 'ts-command-line-args';
+import { IOptions } from './options'
 
-const sourcePostmanCollectionPath = '..\\Eris.Compose\\postman\\Eris.postman_collection.json';
+const args = parse<IOptions>({
+    sourcePath: { type: String, optional: true as const }
+});
+
+const sourcePostmanCollectionPath = args.sourcePath.toString();
 const sourcePostmanCollection = JSON.parse(readFileSync(sourcePostmanCollectionPath).toString());
 
 const sourceCollection = new Collection(sourcePostmanCollection);
 
-var cnt = 1;
-for (let item of sourceCollection.items.all()) {
-    console.log(item.name);
-    console.log(item);
-    for (let subItem of item.events.all()) {
-        console.log(subItem.name);
+function processItems(items : PropertyList<Item | ItemGroup<Item>>) {
+    for (const item of items.all()) {
+        if (item instanceof Item) {
+            processItem(item);
+            continue;
+        }
+
+        const propertyGroup = <ItemGroup<Item>>item;
+        processItems(propertyGroup.items);
+    }
+}
+
+function processItem(item : Item) {
+    console.log(`### ${item.name}`);
+    console.log('');
+    console.log(`${item.request.method} ${item.request.url}`);
+    console.log('');
+}
+
+processItems(sourceCollection.items);
+
+// var cnt = 1;
+// for (const item of sourceCollection.items.all()) {
+//     const propertyGroup = <ItemGroup<Item>>item;
+//     for (const subItem of propertyGroup.items.all()) {
+//         console.log(subItem.name);
         // var request = member.request;
         // var prerequest = member.events.members.find((event) => (event.listen == 'prerequest'));
         // var test = member.events.members.find((event) => (event.listen == 'test'));
@@ -39,5 +65,5 @@ for (let item of sourceCollection.items.all()) {
         // }
         // console.log();
         // cnt++;
-    }
-}
+//     }
+// }

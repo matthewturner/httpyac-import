@@ -2,10 +2,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "args": [],
             "cwd": "${workspaceRoot}",
             "name": "Debug",
             "program": "${workspaceRoot}/src/app.ts",
+            "args": [ "--sourcePath=example.postman_collection.json" ],
             "request": "launch",
             "runtimeArgs": [
             ],
