@@ -5,7 +5,10 @@
             "cwd": "${workspaceRoot}",
             "name": "Debug",
             "program": "${workspaceRoot}/src/app.ts",
-            "args": [ "--sourcePath=example.postman_collection.json" ],
+            "args": [ 
+                "--sourcePath=example.postman_collection.json",
+                "--destinationPath=output",
+            ],
             "request": "launch",
             "runtimeArgs": [
             ],

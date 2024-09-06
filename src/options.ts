@@ -1,3 +1,4 @@
 export interface IOptions {
-    sourcePath: String;
+    sourcePath: string;
+    destinationPath: string;
 }

@@ -6,7 +6,10 @@
         "target": "ES5",
         "outDir": "bin",
         "rootDir": "src",
-        "sourceMap": true
+        "sourceMap": true,
+        "lib": [
+            "ES2021.String"
+        ]
     },
     "exclude": [
         "node_modules"
