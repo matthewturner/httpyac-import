@@ -13,8 +13,24 @@ export function requestDefinitionFrom(item : Item) {
 
     requestDefinition += '\n\n';
 
-    requestDefinition += `${item.request.method} ${item.request.url}`;
+    requestDefinition += `${item.request.method} ${item.request.url.getHost()}${item.request.url.getPath()}`;
 
+    let paramCount = 0;
+    for (let x of item.request.url.query.all()) {
+        if (paramCount == 0) {
+            requestDefinition += `\n    ?${x}`
+            paramCount++;
+        } else {
+            requestDefinition += `\n    &${x}`
+        }
+    }
+
+    if (item.request.body !== undefined) {
+        requestDefinition += 'Content-Type: application/json';
+        requestDefinition += '\n\n';
+        requestDefinition += item.request.body.toString();
+    }
+    
     const test = item.events.find(e => e.listen == 'test', null);
 
     if (test !== undefined) {
@@ -26,7 +42,7 @@ export function requestDefinitionFrom(item : Item) {
         }
 
         if (test.script.exec.length == 3 && test.script.exec[1].indexOf('pm.response.to.have.status') >= 0) {
-            // console.log('Post request script is status check only');
+            console.log('Post request script is status check only');
         } else {
             requestDefinition += '\n\n{{\n';
             requestDefinition += `// ${test.script.exec.join('\n//')}`;
