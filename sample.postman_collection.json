@@ -1,0 +1,89 @@
+{
+	"info": {
+		"name": "Sample",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Comments",
+			"item": [
+				{
+					"name": "V1",
+					"item": [
+						{
+							"name": "List Comments",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status test\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/v1/comments",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"v1",
+										"comments"
+									],
+									"query": [
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "V2",
+					"item": [
+						{
+							"name": "List Comments",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status test\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    pm.expect(pm.response.json()[0].id).to.equal(\"some-id\");\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/v2/comments",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"v2",
+										"comments"
+									],
+									"query": []
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

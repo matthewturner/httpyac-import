@@ -6,8 +6,8 @@
             "name": "Debug",
             "program": "${workspaceRoot}/src/app.ts",
             "args": [ 
-                "--sourcePath=example.postman_collection.json",
-                "--destinationPath=output",
+                "--sourcePath=sample.postman_collection.json",
+                "--targetPath=output",
             ],
             "request": "launch",
             "runtimeArgs": [
