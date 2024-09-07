@@ -17,6 +17,15 @@
             "sourceMaps": true,
             "stopOnEntry": false,
             "type": "node"
-        }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": " Unit Test",
+            "program": "${workspaceRoot}\\node_modules\\jest\\bin\\jest.js",
+            "args": [
+            ],
+            "internalConsoleOptions": "openOnSessionStart",
+        },
     ]
 }
