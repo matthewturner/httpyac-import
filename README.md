@@ -8,6 +8,7 @@ CLI script to convert a postman collection to httpyac file or files.
 
 * sourcePath - path to the postman collection json file
 * targetPath - path to the root of the .http files, will be created if it doesn't exist
+* ignoreHeaders - optional list of headers to ignore, useful when using default headers. Supports regex patterns
 
 ## Request Lines
 
@@ -63,3 +64,10 @@ Will be converted to:
 //});
 }}
 ```
+
+## Limitations
+
+There is no current support for:
+
+* Non-javascript scripting languages
+* Non-JSON body in POST/PUT requests

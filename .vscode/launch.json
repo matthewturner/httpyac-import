@@ -8,6 +8,7 @@
             "args": [ 
                 "--sourcePath=sample.postman_collection.json",
                 "--targetPath=output",
+                "--ignoreHeaders=Ignore.*"
             ],
             "request": "launch",
             "runtimeArgs": [
