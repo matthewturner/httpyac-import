@@ -1,11 +1,11 @@
 {
   "name": "postman2httpyac",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "CLI to convert postman collection to httpyac file",
-  "main": "main.ts",
+  "main": "./src/app.ts",
   "scripts": {
     "test": "echo \"Error: no test specified. SHAME! SHAME! SHAME!\" && exit 1",
-    "run": "ts-node main.ts"
+    "convert": "ts-node ./src/app.ts"
   },
   "keywords": [
     "postman",
@@ -15,7 +15,7 @@
     "convert",
     "import"
   ],
-  "author": "Tobias Bielohlawek",
+  "author": "Matthew Turner",
   "license": "ISC",
   "dependencies": {
     "postman-collection": "^4.1.0",

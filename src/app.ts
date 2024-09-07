@@ -7,14 +7,18 @@ import { sanitize } from './helpers';
 import { RequestDefinitionBuilder } from './RequestDefinitionBuilder';
 
 const args = parse<IOptions>({
-    sourcePath: { type: String, optional: true as const },
-    destinationPath: { type: String, optional: true as const },
+    sourcePath: { 
+        type: String, alias: 's', optional: true as const 
+    },
+    targetPath: {
+        type: String, alias: 'd', optional: true as const
+    },
 });
 
 const sourcePostmanCollectionPath = args.sourcePath.toString();
 const sourcePostmanCollection = JSON.parse(readFileSync(sourcePostmanCollectionPath).toString());
 
-const destinationPaths = [ args.destinationPath ];
+const targetPaths = [ args.targetPath ];
 
 const sourceCollection = new Collection(sourcePostmanCollection);
 
@@ -26,14 +30,14 @@ function processItems(items : PropertyList<Item | ItemGroup<Item>>) {
         }
 
         const propertyGroup = <ItemGroup<Item>>item;
-        destinationPaths.push(sanitize(item.name));
+        targetPaths.push(sanitize(item.name));
         processItems(propertyGroup.items);
-        destinationPaths.pop();
+        targetPaths.pop();
     }
 }
 
 function processItem(item : Item) {
-    const directory = join(...destinationPaths);
+    const directory = join(...targetPaths);
 
     if (!existsSync(directory)) {
         console.log(`Creating directory ${directory}...`);

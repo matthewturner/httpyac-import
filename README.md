@@ -2,9 +2,16 @@
 
 CLI script to convert a postman collection to httpyac file or files.
 
+## Usage
+
+`npm run convert -- --sourcePath=sample.postman_collection.json --targetPath=output`
+
+* sourcePath - path to the postman collection json file
+* targetPath - path to the root of the .http files, will be created if it doesn't exist
+
 ## Request Lines
 
-Request lines will be parsed and split onto multiple lines:
+Request lines are parsed and split onto multiple lines:
 
 ```
 GET https://www.google.de?option=value
@@ -35,7 +42,7 @@ Will be converted to the concise httpyac equivalent:
 ?? status == 201
 ```
 
-More complicated assertions will be output commented out and marked with a TODO:
+More complicated assertions will be commented out and marked with a TODO:
 
 ```javascript
 pm.test("Status test", function () {
