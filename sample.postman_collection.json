@@ -11,7 +11,7 @@
 					"name": "V1",
 					"item": [
 						{
-							"name": "List Comments",
+							"name": "Get Comment",
 							"event": [
 								{
 									"listen": "test",
@@ -29,7 +29,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{host}}/v1/comments",
+									"raw": "{{host}}/v1/comments/{{commentId}}",
 									"host": [
 										"{{host}}"
 									],
@@ -49,7 +49,7 @@
 					"name": "V2",
 					"item": [
 						{
-							"name": "List Comments",
+							"name": "Get Comment",
 							"event": [
 								{
 									"listen": "test",
@@ -66,9 +66,20 @@
 							],
 							"request": {
 								"method": "GET",
-								"header": [],
+								"header": [
+									{
+										"key": "If-Match",
+										"value": "xxx",
+										"type": "text"
+									},
+									{
+										"key": "IgnoreThisHeader",
+										"value": "shouldnotseeme",
+										"type": "text"
+									}
+								],
 								"url": {
-									"raw": "{{host}}/v2/comments",
+									"raw": "{{host}}/v2/comments/{{commentId}}",
 									"host": [
 										"{{host}}"
 									],

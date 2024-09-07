@@ -8,11 +8,26 @@ import { RequestDefinitionBuilder } from './RequestDefinitionBuilder';
 
 const args = parse<IOptions>({
     sourcePath: { 
-        type: String, alias: 's', optional: true as const 
+        type: String, alias: 's', optional: true as const, description: 'Path to the exported postman_collection.json'
     },
     targetPath: {
-        type: String, alias: 'd', optional: true as const
+        type: String, alias: 'd', optional: true as const, description: 'Path to the root directory to output the .http files'
     },
+    ignoreHeaders: {
+        type: String,
+        alias: 'i',
+        multiple: true,
+        optional: true as const,
+        description: 'List of headers to ignore, useful when using default headers. Supports regex patterns',
+        defaultValue: []
+    },
+    help: { 
+        type: Boolean, optional: true, alias: 'h', description: 'Prints this usage guide'
+    },
+},
+{
+    helpArg: 'help',
+    headerContentSections: [{ header: 'Postman 2 HttpYac', content: 'Converts Postman collections to HttpYac format' }]
 });
 
 const sourcePostmanCollectionPath = args.sourcePath.toString();
@@ -50,9 +65,11 @@ function processItem(item : Item) {
 
     console.log('Writing request definition...');
     const requestDefinition = new RequestDefinitionBuilder()
+        .ignoreHeaders(args.ignoreHeaders)
         .from(item)
         .appendName()
         .appendRequest()
+        .appendHeaders()
         .appendBody()
         .appendPreRequestScript()
         .appendTestScript()

@@ -3,9 +3,11 @@ import { Event, Item } from 'postman-collection';
 export class RequestDefinitionBuilder {
     _definition: string;
     _item: Item
+    _ignoreHeaders: string[];
 
     constructor() {
         this._definition = '';
+        this._ignoreHeaders = [];
     }
 
     from(item: Item): RequestDefinitionBuilder {
@@ -14,6 +16,12 @@ export class RequestDefinitionBuilder {
         if (this._definition.length > 0) {
             this._definition += '\n\n\n';
         }
+
+        return this;
+    }
+
+    ignoreHeaders(headers: string[]): RequestDefinitionBuilder {
+        this._ignoreHeaders.push(...headers);
 
         return this;
     }
@@ -116,6 +124,34 @@ export class RequestDefinitionBuilder {
         }
 
         return this;
+    }
+
+    appendHeaders(): RequestDefinitionBuilder {
+        if (this._item.request.headers === undefined) {
+            return this;
+        }
+
+        for (const header of this._item.request.headers.all()) {
+            if (!this.shouldInclude(header.key)) {
+                continue;
+            }
+
+            this._definition += '\n';
+            this._definition += `${header.key}: ${header.value}`
+        }
+
+        return this;
+    }
+
+    shouldInclude(header: string): boolean {
+        for (const ignoreHeader of this._ignoreHeaders) {
+            if (header.match(ignoreHeader)) {
+                console.log(`Ignoring header ${header}...`);
+                return false;
+            }
+        }
+
+        return true;
     }
 
     appendBody(): RequestDefinitionBuilder {
