@@ -1,9 +1,10 @@
 import { writeFileSync, readFileSync, mkdirSync, existsSync } from 'fs';
-import { Collection, ItemGroup, Item, PropertyList, Event } from 'postman-collection';
+import { Collection, ItemGroup, Item, PropertyList } from 'postman-collection';
 import { parse } from 'ts-command-line-args';
-import { IOptions } from './options'
+import { IOptions } from './Options'
 import { join } from 'path';
-import { sanitize, requestDefinitionFrom } from './helpers';
+import { sanitize } from './helpers';
+import { RequestDefinitionBuilder } from './RequestDefinitionBuilder';
 
 const args = parse<IOptions>({
     sourcePath: { type: String, optional: true as const },
@@ -44,7 +45,15 @@ function processItem(item : Item) {
     const path = join(directory, filename);
 
     console.log('Writing request definition...');
-    const requestDefinition = requestDefinitionFrom(item);
+    const requestDefinition = new RequestDefinitionBuilder()
+        .from(item)
+        .appendName()
+        .appendRequest()
+        .appendBody()
+        .appendPreRequestScript()
+        .appendTestScript()
+        .toString();
+
     console.log(requestDefinition);
 
     writeFileSync(path, requestDefinition, { flag: 'w' });
