@@ -1,4 +1,4 @@
-import { Event, Item } from 'postman-collection';
+import { Item } from 'postman-collection';
 
 export class RequestDefinitionBuilder {
     _definition: string;
