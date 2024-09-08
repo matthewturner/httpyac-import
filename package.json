@@ -15,7 +15,7 @@
     "httpyac-import": "./bin/httpyac-import.js"
   },
   "scripts": {
-    "build": "npm run tsc",
+    "build": "npx tsc",
     "test": "jest",
     "convert": "ts-node ./src/app.ts"
   },
