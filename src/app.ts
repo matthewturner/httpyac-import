@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 import { writeFileSync, readFileSync, mkdirSync, existsSync } from 'fs';
 import { Collection, ItemGroup, Item, PropertyList } from 'postman-collection';
 import { parse } from 'ts-command-line-args';
@@ -7,7 +9,7 @@ import { sanitize } from './helpers';
 import { RequestDefinitionBuilder } from './RequestDefinitionBuilder';
 
 const args = parse<IOptions>({
-    sourcePath: { 
+    sourcePath: {
         type: String, alias: 's', optional: true as const, description: 'Path to the exported postman_collection.json'
     },
     targetPath: {
@@ -21,23 +23,23 @@ const args = parse<IOptions>({
         description: 'List of headers to ignore, useful when using default headers. Supports regex patterns',
         defaultValue: []
     },
-    help: { 
+    help: {
         type: Boolean, optional: true, alias: 'h', description: 'Prints this usage guide'
     },
 },
-{
-    helpArg: 'help',
-    headerContentSections: [{ header: 'Postman 2 HttpYac', content: 'Converts Postman collections to HttpYac format' }]
-});
+    {
+        helpArg: 'help',
+        headerContentSections: [{ header: 'HttpYac Import', content: 'Converts Postman collections to HttpYac format' }]
+    });
 
 const sourcePostmanCollectionPath = args.sourcePath.toString();
 const sourcePostmanCollection = JSON.parse(readFileSync(sourcePostmanCollectionPath).toString());
 
-const targetPaths = [ args.targetPath ];
+const targetPaths = [args.targetPath];
 
 const sourceCollection = new Collection(sourcePostmanCollection);
 
-function processItems(items : PropertyList<Item | ItemGroup<Item>>) {
+function processItems(items: PropertyList<Item | ItemGroup<Item>>) {
     for (const item of items.all()) {
         if (item instanceof Item) {
             processItem(item);
@@ -51,7 +53,7 @@ function processItems(items : PropertyList<Item | ItemGroup<Item>>) {
     }
 }
 
-function processItem(item : Item) {
+function processItem(item: Item) {
     const directory = join(...targetPaths);
 
     if (!existsSync(directory)) {
