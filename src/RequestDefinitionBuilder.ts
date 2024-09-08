@@ -31,7 +31,7 @@ export class RequestDefinitionBuilder {
         return this;
     }
 
-    appendPreRequestScript() : RequestDefinitionBuilder {
+    appendPreRequestScript(): RequestDefinitionBuilder {
         const preRequestTest = this._item.events.find(e => e.listen == 'prerequest', null);
 
         if (preRequestTest === undefined) {
@@ -73,7 +73,7 @@ export class RequestDefinitionBuilder {
                 continue;
             }
 
-            if (statement.indexOf('pm.response.to.have.status') >= 0 ){
+            if (statement.indexOf('pm.response.to.have.status') >= 0) {
                 statusCode = this.statusCodeFor(statement);
                 continue;
             }
@@ -116,7 +116,6 @@ export class RequestDefinitionBuilder {
             this._definition += '\n';
             this._definition += '// TODO: Fixup Postman test script\n';
             this._definition += `// ${test.script.exec.join('\n//')}`;
-            this._definition += '\n}}';
         }
 
         if (!handled || idProperty != '' || etagProperty != '') {
@@ -159,8 +158,11 @@ export class RequestDefinitionBuilder {
             return this;
         }
 
-        this._definition += '\n';
-        this._definition += 'Content-Type: application/json';
+        if (!this._item.request.headers.all().find(x => x.key == 'Content-Type')) {
+            this._definition += '\n';
+            this._definition += 'Content-Type: application/json';
+        }
+
         this._definition += '\n\n';
         this._definition += this._item.request.body.toString();
 

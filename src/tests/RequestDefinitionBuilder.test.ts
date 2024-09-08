@@ -1,5 +1,5 @@
 import { RequestDefinitionBuilder } from '../RequestDefinitionBuilder';
-import { Item, ItemGroup, Collection, Url, Header, RequestBody } from 'postman-collection';
+import { Item, ItemGroup, Collection, Url, Header, RequestBody, Event } from 'postman-collection';
 import { readFileSync } from 'fs';
 
 describe('Request Definition Builder', () => {
@@ -68,5 +68,67 @@ describe('Request Definition Builder', () => {
         const actual = target.toString();
 
         expect(actual).toBe('\nContent-Type: application/json\n\n{ "some": "value" }');
+    });
+
+    test('Body is added with single content-type header', () => {
+        getRequest.request.body = new RequestBody({ mode: 'json', raw: '{ "some": "value" }' });
+        getRequest.request.headers.clear();
+
+        const header1 = new Header('option');
+        header1.key = 'Content-Type';
+        header1.value = 'application/json';
+        getRequest.request.headers.add(header1);
+
+        const target = new RequestDefinitionBuilder()
+            .from(getRequest)
+            .appendHeaders()
+            .appendBody();
+
+        const actual = target.toString();
+
+        expect(actual).toBe('\nContent-Type: application/json\n\n{ "some": "value" }');
+    });
+
+    test('Simple status code test script is converted to concise format', () => {
+        getRequest.events.clear();
+
+        const event1 = new Event({
+            listen: 'test', script: {
+                exec:
+                    [
+                        "pm.test(\"Status test\", function () {\r",
+                        "    pm.response.to.have.status(200);\r",
+                        "});"
+                    ]
+            }
+        });
+        getRequest.events.add(event1);
+
+        const target = new RequestDefinitionBuilder()
+            .from(getRequest)
+            .appendTestScript();
+
+        const actual = target.toString();
+
+        expect(actual).toBe('\n\n?? status == 200');
+    });
+
+    test('Unknown test script is added commented out', () => {
+        getRequest.events.clear();
+
+        const event1 = new Event({ listen: 'test', script: { exec: ['console.log("something");'] } });
+        getRequest.events.add(event1);
+
+        const target = new RequestDefinitionBuilder()
+            .from(getRequest)
+            .appendTestScript();
+
+        const actual = target.toString();
+
+        expect(actual).toBe('\n\n{{'
+            + '\n// TODO: Fixup Postman test script'
+            + '\n// console.log("something");'
+            + '\n}}'
+        );
     });
 });
