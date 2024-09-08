@@ -1,4 +1,4 @@
-import { RequestDefinitionBuilder } from '../src/RequestDefinitionBuilder';
+import { RequestDefinitionBuilder } from '../RequestDefinitionBuilder';
 import { Item, ItemGroup, Collection, Url, Header, RequestBody } from 'postman-collection';
 import { readFileSync } from 'fs';
 
