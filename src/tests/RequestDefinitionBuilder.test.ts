@@ -113,6 +113,33 @@ describe('Request Definition Builder', () => {
         expect(actual).toBe('\n\n?? status == 200');
     });
 
+    test('Id from response is set as global variable', () => {
+        getRequest.events.clear();
+
+        const event1 = new Event({
+            listen: 'test', script: {
+                exec:
+                    [
+                        "pm.test(\"Status test\", function () {\r",
+                        "    pm.environment.set(\"someId\", pm.response.json().id);\r",
+                        "});"
+                    ]
+            }
+        });
+        getRequest.events.add(event1);
+
+        const target = new RequestDefinitionBuilder()
+            .from(getRequest)
+            .appendTestScript();
+
+        const actual = target.toString();
+
+        expect(actual).toBe('\n\n{{'
+            + '\n    $global.someId = response.parsedBody.id;'
+            + '\n}}'
+        );
+    });
+
     test('Unknown test script is added commented out', () => {
         getRequest.events.clear();
 
