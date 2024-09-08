@@ -18,7 +18,7 @@
   "author": "Matthew Turner",
   "license": "ISC",
   "dependencies": {
-    "postman-collection": "^4.1.0",
+    "postman-collection": "^4.5.0",
     "ts-command-line-args": "^2.5.1"
   },
   "devDependencies": {
