@@ -1,10 +1,9 @@
 # httpyac-import
 
-CLI script to convert a postman collection to httpyac file or files.
+CLI to convert a postman collection to httpyac file or files.
 
 ## Usage
-
-`npm run convert -- --sourcePath=sample.postman_collection.json --targetPath=output`
+`httpyac-import --sourcePath=sample.postman_collection.json --targetPath=output`
 
 * sourcePath - path to the postman collection json file
 * targetPath - path to the root of the .http files, will be created if it doesn't exist
@@ -111,3 +110,6 @@ There is no current support for:
 
 ## Known Issues
 * Mandatory parameters - the sourcePath and targetPath should be mandatory but [ts-command-line-args ](https://www.npmjs.com/package/ts-command-line-args) seems to demand they be set as optional
+
+## Running from the repository
+`npm run convert -- --sourcePath=sample.postman_collection.json --targetPath=output`
