@@ -37,8 +37,7 @@
 										"v1",
 										"comments"
 									],
-									"query": [
-									]
+									"query": []
 								}
 							},
 							"response": []
@@ -51,6 +50,15 @@
 						{
 							"name": "Get Comment",
 							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"console.log('Some pre-request setup');"
+										],
+										"type": "text/javascript"
+									}
+								},
 								{
 									"listen": "test",
 									"script": {

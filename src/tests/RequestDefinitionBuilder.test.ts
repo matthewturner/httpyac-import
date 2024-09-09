@@ -10,7 +10,7 @@ describe('Request Definition Builder', () => {
     const v1Group = <ItemGroup<Item>>rootGroup.items.all().at(0);
     const getRequest = <Item>v1Group.items.all().at(0);
 
-    test('Request line is split', () => {
+    test('Splits request line', () => {
         getRequest.request.url = new Url('http://host.com?color=red')
 
         const target = new RequestDefinitionBuilder()
@@ -22,8 +22,9 @@ describe('Request Definition Builder', () => {
         expect(actual).toBe('\n\nGET host.com/\n    ?color=red');
     });
 
-    test('Header is added', () => {
+    test('Adds single header', () => {
         getRequest.request.headers.clear();
+
         const header = new Header('option');
         header.key = 'SomeHeader';
         header.value = 'SomeValue';
@@ -38,12 +39,14 @@ describe('Request Definition Builder', () => {
         expect(actual).toBe('\nSomeHeader: SomeValue');
     });
 
-    test('Multiple headers are added', () => {
+    test('Adds multiple headers', () => {
         getRequest.request.headers.clear();
+
         const header1 = new Header('option');
         header1.key = 'SomeHeader1';
         header1.value = 'SomeValue1';
         getRequest.request.headers.add(header1);
+
         const header2 = new Header('option');
         header2.key = 'SomeHeader2';
         header2.value = 'SomeValue2';
@@ -58,7 +61,58 @@ describe('Request Definition Builder', () => {
         expect(actual).toBe('\nSomeHeader1: SomeValue1\nSomeHeader2: SomeValue2');
     });
 
-    test('Body is added with default content-type header', () => {
+    test('Ignores exact header', () => {
+        getRequest.request.headers.clear();
+
+        const header1 = new Header('option');
+        header1.key = 'SomeHeader1';
+        header1.value = 'SomeValue1';
+        getRequest.request.headers.add(header1);
+
+        const header2 = new Header('option');
+        header2.key = 'SomeHeader2';
+        header2.value = 'SomeValue2';
+        getRequest.request.headers.add(header2);
+
+        const target = new RequestDefinitionBuilder()
+            .ignoreHeaders(['SomeHeader1'])
+            .from(getRequest)
+            .appendHeaders();
+
+        const actual = target.toString();
+
+        expect(actual).toBe('\nSomeHeader2: SomeValue2');
+    });
+
+    test('Ignores header based on regex pattern', () => {
+        getRequest.request.headers.clear();
+
+        const header1 = new Header('option');
+        header1.key = 'SomeHeader1';
+        header1.value = 'SomeValue1';
+        getRequest.request.headers.add(header1);
+
+        const header2 = new Header('option');
+        header2.key = 'SomeHeader2';
+        header2.value = 'SomeValue2';
+        getRequest.request.headers.add(header2);
+
+        const header3 = new Header('option');
+        header3.key = 'ExactHeader3';
+        header3.value = 'SomeValue3';
+        getRequest.request.headers.add(header3);
+
+        const target = new RequestDefinitionBuilder()
+            .ignoreHeaders(['Some.*'])
+            .from(getRequest)
+            .appendHeaders();
+
+        const actual = target.toString();
+
+        expect(actual).toBe('\nExactHeader3: SomeValue3');
+    });
+
+    test('Adds body with default content-type header', () => {
         getRequest.request.body = new RequestBody({ mode: 'json', raw: '{ "some": "value" }' });
 
         const target = new RequestDefinitionBuilder()
@@ -70,7 +124,7 @@ describe('Request Definition Builder', () => {
         expect(actual).toBe('\nContent-Type: application/json\n\n{ "some": "value" }');
     });
 
-    test('Body is added with single content-type header', () => {
+    test('Adds body with single content-type header', () => {
         getRequest.request.body = new RequestBody({ mode: 'json', raw: '{ "some": "value" }' });
         getRequest.request.headers.clear();
 
@@ -89,7 +143,7 @@ describe('Request Definition Builder', () => {
         expect(actual).toBe('\nContent-Type: application/json\n\n{ "some": "value" }');
     });
 
-    test('Simple status code test script is converted to concise format', () => {
+    test('Converts simple status code test script to concise format', () => {
         getRequest.events.clear();
 
         const event1 = new Event({
@@ -113,7 +167,7 @@ describe('Request Definition Builder', () => {
         expect(actual).toBe('\n\n?? status == 200');
     });
 
-    test('Id from response is set as global variable', () => {
+    test('Sets id from response as global variable', () => {
         getRequest.events.clear();
 
         const event1 = new Event({
@@ -140,7 +194,7 @@ describe('Request Definition Builder', () => {
         );
     });
 
-    test('Unknown test script is added commented out', () => {
+    test('Adds unknown test script commented out', () => {
         getRequest.events.clear();
 
         const event1 = new Event({ listen: 'test', script: { exec: ['console.log("something");'] } });
@@ -154,6 +208,25 @@ describe('Request Definition Builder', () => {
 
         expect(actual).toBe('\n\n{{'
             + '\n// TODO: Fixup Postman test script'
+            + '\n// console.log("something");'
+            + '\n}}'
+        );
+    });
+
+    test('Adds unknown pre-request script commented out', () => {
+        getRequest.events.clear();
+
+        const event1 = new Event({ listen: 'prerequest', script: { exec: ['console.log("something");'] } });
+        getRequest.events.add(event1);
+
+        const target = new RequestDefinitionBuilder()
+            .from(getRequest)
+            .appendPreRequestScript();
+
+        const actual = target.toString();
+
+        expect(actual).toBe('\n\n{{'
+            + '\n// TODO: Fixup Postman pre-request script'
             + '\n// console.log("something");'
             + '\n}}'
         );

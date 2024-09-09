@@ -32,7 +32,17 @@ const args = parse<IOptions>({
         headerContentSections: [{ header: 'HttpYac Import', content: 'Converts Postman collections to HttpYac format' }]
     });
 
-const sourcePostmanCollectionPath = args.sourcePath.toString();
+if (args.sourcePath === undefined) {
+    console.log('Source path must be supplied with --sourcePath=path');
+    process.exit(1);
+}
+
+if (args.targetPath === undefined) {
+    console.log('Target path must be supplied with --targetPath=path');
+    process.exit(2);
+}
+
+const sourcePostmanCollectionPath = args.sourcePath;
 const sourcePostmanCollection = JSON.parse(readFileSync(sourcePostmanCollectionPath).toString());
 
 const targetPaths = [args.targetPath];
@@ -70,10 +80,10 @@ function processItem(item: Item) {
         .ignoreHeaders(args.ignoreHeaders)
         .from(item)
         .appendName()
+        .appendPreRequestScript()
         .appendRequest()
         .appendHeaders()
         .appendBody()
-        .appendPreRequestScript()
         .appendTestScript()
         .toString();
 
