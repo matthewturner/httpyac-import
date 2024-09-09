@@ -112,4 +112,4 @@ There is no current support for:
 * Mandatory parameters - the sourcePath and targetPath should be mandatory but [ts-command-line-args ](https://www.npmjs.com/package/ts-command-line-args) seems to demand they be set as optional
 
 ## Running from the repository
-`npm run import -- --sourcePath=sample.postman_collection.json --targetPath=output`
+`npm run import -- -- --sourcePath=sample.postman_collection.json --targetPath=output`
