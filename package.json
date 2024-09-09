@@ -17,7 +17,7 @@
   "scripts": {
     "build": "npx tsc",
     "test": "jest",
-    "convert": "ts-node ./src/app.ts"
+    "import": "ts-node ./src/app.ts"
   },
   "keywords": [
     "postman",
