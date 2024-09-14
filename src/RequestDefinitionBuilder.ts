@@ -4,21 +4,25 @@ export class RequestDefinitionBuilder {
     _definition: string;
     _item: Item
     _ignoreHeaders: string[];
+    _requestSeparator: string;
 
     constructor() {
         this._definition = '';
         this._ignoreHeaders = [];
+        this._requestSeparator = '\n\n\n';
     }
 
     from(item: Item): RequestDefinitionBuilder {
         this._item = item;
+
+        this.includeSeparatorIf(this._definition.length > this._requestSeparator.length);
 
         return this;
     }
 
     includeSeparatorIf(condition: boolean): RequestDefinitionBuilder {
         if (condition) {
-            this._definition += '\n\n\n';
+            this._definition += this._requestSeparator;
         }
 
         return this;

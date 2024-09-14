@@ -242,6 +242,17 @@ describe('Request Definition Builder', () => {
         expect(actual).toBe('\n\n\n');
     });
 
+    test('Adds separator if target item has changed', () => {
+        const target = new RequestDefinitionBuilder()
+            .from(getRequest)
+            .appendName()
+            .from(getRequest);
+
+        const actual = target.toString();
+
+        expect(actual).toBe('### Get Comment\n\n\n');
+    });
+
     test('Builds output in order', () => {
         const event1 = new Event({ listen: 'test', script: { exec: ['console.log("something");'] } });
         getRequest.events.add(event1);
