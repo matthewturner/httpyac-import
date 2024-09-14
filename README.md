@@ -98,9 +98,9 @@ Will be converted to:
 {{
 // TODO: Fixup Postman test script
 // pm.test("Status test", function () {
-//    pm.response.to.have.status(201);
-//    console.log(pm.response.json().id);
-//});
+//     pm.response.to.have.status(201);
+//     console.log(pm.response.json().id);
+// });
 }}
 ```
 
