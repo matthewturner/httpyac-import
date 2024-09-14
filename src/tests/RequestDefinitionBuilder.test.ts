@@ -232,6 +232,16 @@ describe('Request Definition Builder', () => {
         );
     });
 
+    test('Adds separator if condition is met', () => {
+        const target = new RequestDefinitionBuilder()
+            .from(getRequest)
+            .includeSeparatorIf(true);
+
+        const actual = target.toString();
+
+        expect(actual).toBe('\n\n\n');
+    });
+
     test('Builds output in order', () => {
         const event1 = new Event({ listen: 'test', script: { exec: ['console.log("something");'] } });
         getRequest.events.add(event1);
