@@ -231,4 +231,34 @@ describe('Request Definition Builder', () => {
             + '\n}}'
         );
     });
+
+    test('Builds output in order', () => {
+        const event1 = new Event({ listen: 'test', script: { exec: ['console.log("something");'] } });
+        getRequest.events.add(event1);
+
+        const target = new RequestDefinitionBuilder()
+            .from(getRequest)
+            .build();
+
+        const actual = target.toString();
+
+        expect(actual).toBe('### Get Comment'
+            + '\n'
+            + '\n{{'
+            + '\n// TODO: Fixup Postman pre-request script'
+            + '\n// console.log("something");'
+            + '\n}}'
+            + '\n'
+            + '\nGET host.com/'
+            + '\n    ?color=red'
+            + '\nContent-Type: application/json'
+            + '\n'
+            + '\n{ "some": "value" }'
+            + '\n'
+            + '\n{{'
+            + '\n// TODO: Fixup Postman test script'
+            + '\n// console.log("something");'
+            + '\n}}'
+        );
+    });
 });

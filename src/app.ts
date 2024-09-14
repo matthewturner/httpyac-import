@@ -79,12 +79,7 @@ function processItem(item: Item) {
     const requestDefinition = new RequestDefinitionBuilder()
         .ignoreHeaders(args.ignoreHeaders)
         .from(item)
-        .appendName()
-        .appendPreRequestScript()
-        .appendRequest()
-        .appendHeaders()
-        .appendBody()
-        .appendTestScript()
+        .build()
         .toString();
 
     console.log(requestDefinition);
