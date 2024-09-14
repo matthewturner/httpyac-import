@@ -3,5 +3,6 @@ dist
 node_modules
 solaris
 output
+coverage
 
 example.postman_collection.json

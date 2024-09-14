@@ -3,15 +3,20 @@ import { Item, ItemGroup, Collection, Url, Header, RequestBody, Event } from 'po
 import { readFileSync } from 'fs';
 
 describe('Request Definition Builder', () => {
-    const sourcePostmanCollection = JSON.parse(readFileSync('sample.postman_collection.json').toString());
-    const sourceCollection = new Collection(sourcePostmanCollection);
+    let getRequest: Item;
 
-    const rootGroup = <ItemGroup<Item>>sourceCollection.items.all().at(0);
-    const v1Group = <ItemGroup<Item>>rootGroup.items.all().at(0);
-    const getRequest = <Item>v1Group.items.all().at(0);
+    beforeEach(() => {
+        const sourcePostmanCollection = JSON.parse(readFileSync('sample.postman_collection.json').toString());
+        const sourceCollection = new Collection(sourcePostmanCollection);
+
+        const rootGroup = <ItemGroup<Item>>sourceCollection.items.all().at(0);
+        const v1Group = <ItemGroup<Item>>rootGroup.items.all().at(0);
+
+        getRequest = <Item>v1Group.items.all().at(0);
+    });
 
     test('Splits request line', () => {
-        getRequest.request.url = new Url('http://host.com?color=red')
+        getRequest.request.url = new Url('http://host.com?color=red');
 
         const target = new RequestDefinitionBuilder()
             .from(getRequest)
@@ -19,7 +24,47 @@ describe('Request Definition Builder', () => {
 
         const actual = target.toString();
 
-        expect(actual).toBe('\n\nGET host.com/\n    ?color=red');
+        expect(actual).toBe('\n\nGET host.com'
+            + '\n    ?color=red');
+    });
+
+    test('Splits request line with path', () => {
+        getRequest.request.url = new Url('http://host.com/items?color=red');
+
+        const target = new RequestDefinitionBuilder()
+            .from(getRequest)
+            .appendRequest();
+
+        const actual = target.toString();
+
+        expect(actual).toBe('\n\nGET host.com/items'
+            + '\n    ?color=red');
+    });
+
+    test('Splits request line with multiple query parameters', () => {
+        getRequest.request.url = new Url('http://host.com?color=red&flavor=sweet');
+
+        const target = new RequestDefinitionBuilder()
+            .from(getRequest)
+            .appendRequest();
+
+        const actual = target.toString();
+
+        expect(actual).toBe('\n\nGET host.com'
+            + '\n    ?color=red'
+            + '\n    &flavor=sweet');
+    });
+
+    test('Handles missing headers', () => {
+        getRequest.request.headers = undefined;
+
+        const target = new RequestDefinitionBuilder()
+            .from(getRequest)
+            .appendHeaders();
+
+        const actual = target.toString();
+
+        expect(actual).toBe('');
     });
 
     test('Adds single header', () => {
@@ -112,6 +157,18 @@ describe('Request Definition Builder', () => {
         expect(actual).toBe('\nExactHeader3: SomeValue3');
     });
 
+    test('Handles missing body', () => {
+        getRequest.request.body = undefined;
+
+        const target = new RequestDefinitionBuilder()
+            .from(getRequest)
+            .appendBody();
+
+        const actual = target.toString();
+
+        expect(actual).toBe('');
+    });
+
     test('Adds body with default content-type header', () => {
         getRequest.request.body = new RequestBody({ mode: 'json', raw: '{ "some": "value" }' });
 
@@ -143,6 +200,18 @@ describe('Request Definition Builder', () => {
         expect(actual).toBe('\nContent-Type: application/json\n\n{ "some": "value" }');
     });
 
+    test('Handles missing test script', () => {
+        getRequest.events.clear();
+
+        const target = new RequestDefinitionBuilder()
+            .from(getRequest)
+            .appendTestScript();
+
+        const actual = target.toString();
+
+        expect(actual).toBe('');
+    });
+
     test('Converts simple status code test script to concise format', () => {
         getRequest.events.clear();
 
@@ -165,6 +234,35 @@ describe('Request Definition Builder', () => {
         const actual = target.toString();
 
         expect(actual).toBe('\n\n?? status == 200');
+    });
+
+    test('Handles invalid status code in test script', () => {
+        getRequest.events.clear();
+
+        const event1 = new Event({
+            listen: 'test', script: {
+                exec:
+                    [
+                        "pm.test(\"Status test\", function () {\r",
+                        "    pm.response.to.have.status(xxx);\r",
+                        "});"
+                    ]
+            }
+        });
+        getRequest.events.add(event1);
+
+        const target = new RequestDefinitionBuilder()
+            .from(getRequest)
+            .appendTestScript();
+
+        const actual = target.toString();
+
+        expect(actual).toBe('\n\n{{'
+            + '\n// TODO: Fixup Postman test script'
+            + '\n// pm.test("Status test", function () {'
+            + '\r\n//     pm.response.to.have.status(xxx);'
+            + '\r\n// });\n'
+            + '}}');
     });
 
     test('Sets id from response as global variable', () => {
@@ -194,6 +292,33 @@ describe('Request Definition Builder', () => {
         );
     });
 
+    test('Sets etag from response as global variable', () => {
+        getRequest.events.clear();
+
+        const event1 = new Event({
+            listen: 'test', script: {
+                exec:
+                    [
+                        "pm.test(\"Status test\", function () {\r",
+                        "    pm.environment.set(\"someEtag\", pm.response.headers.get(\"Etag\"));\r",
+                        "});"
+                    ]
+            }
+        });
+        getRequest.events.add(event1);
+
+        const target = new RequestDefinitionBuilder()
+            .from(getRequest)
+            .appendTestScript();
+
+        const actual = target.toString();
+
+        expect(actual).toBe('\n\n{{'
+            + '\n    $global.someEtag = response.headers.etag;'
+            + '\n}}'
+        );
+    });
+
     test('Adds unknown test script commented out', () => {
         getRequest.events.clear();
 
@@ -211,6 +336,33 @@ describe('Request Definition Builder', () => {
             + '\n// console.log("something");'
             + '\n}}'
         );
+    });
+
+    test('Handles missing pre-request script', () => {
+        getRequest.events.clear();
+
+        const target = new RequestDefinitionBuilder()
+            .from(getRequest)
+            .appendPreRequestScript();
+
+        const actual = target.toString();
+
+        expect(actual).toBe('');
+    });
+
+    test('Ignores empty pre-request script', () => {
+        getRequest.events.clear();
+
+        const event1 = new Event({ listen: 'prerequest', script: { exec: [''] } });
+        getRequest.events.add(event1);
+
+        const target = new RequestDefinitionBuilder()
+            .from(getRequest)
+            .appendPreRequestScript();
+
+        const actual = target.toString();
+
+        expect(actual).toBe('');
     });
 
     test('Adds unknown pre-request script commented out', () => {
@@ -254,8 +406,16 @@ describe('Request Definition Builder', () => {
     });
 
     test('Builds output in order', () => {
+        getRequest.events.clear();
+
         const event1 = new Event({ listen: 'test', script: { exec: ['console.log("something");'] } });
         getRequest.events.add(event1);
+
+        const event2 = new Event({ listen: 'prerequest', script: { exec: ['console.log("something");'] } });
+        getRequest.events.add(event2);
+
+        getRequest.request.url = new Url('http://host.com?color=red');
+        getRequest.request.body = new RequestBody({ mode: 'json', raw: '{ "some": "value" }' });
 
         const target = new RequestDefinitionBuilder()
             .from(getRequest)
@@ -270,7 +430,7 @@ describe('Request Definition Builder', () => {
             + '\n// console.log("something");'
             + '\n}}'
             + '\n'
-            + '\nGET host.com/'
+            + '\nGET host.com'
             + '\n    ?color=red'
             + '\nContent-Type: application/json'
             + '\n'
