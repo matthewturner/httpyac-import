@@ -1,6 +1,6 @@
 {
   "name": "httpyac-import",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "CLI to convert Postman collection to httpyac files",
   "homepage": "https://github.com/matthewturner/httpyac-import",
   "repository": {
@@ -17,6 +17,7 @@
   "scripts": {
     "build": "npx tsc",
     "test": "jest",
+    "coverage": "jest --coverage",
     "import": "ts-node ./src/app.ts"
   },
   "keywords": [

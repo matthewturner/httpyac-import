@@ -83,6 +83,9 @@ export class RequestDefinitionBuilder {
 
             if (statement.indexOf('pm.response.to.have.status') >= 0) {
                 statusCode = this.statusCodeFor(statement);
+                if (statusCode == null) {
+                    handled = false;
+                }
                 continue;
             }
 
@@ -180,7 +183,13 @@ export class RequestDefinitionBuilder {
     appendRequest(): RequestDefinitionBuilder {
         this._definition += '\n\n';
 
-        this._definition += `${this._item.request.method} ${this._item.request.url.getHost()}${this._item.request.url.getPath()}`;
+        this._definition += `${this._item.request.method} ${this._item.request.url.getHost()}`;
+
+        const path = this._item.request.url.getPath();
+
+        if (path.length > 1) {
+            this._definition += path;
+        }
 
         let paramCount = 0;
         for (let x of this._item.request.url.query.all()) {
