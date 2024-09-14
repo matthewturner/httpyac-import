@@ -24,7 +24,7 @@ const args = parse<IOptions>({
         defaultValue: []
     },
     splitRequests: {
-        type: Boolean, alias: 'f', optional: true as const, description: 'Determines whether to split requests across multiple files [default: true]'
+        type: Boolean, alias: 'f', optional: true as const, description: 'Determines whether to split requests into separate files [default: true]'
     },
     help: {
         type: Boolean, optional: true, alias: 'h', description: 'Prints this usage guide'

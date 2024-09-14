@@ -8,7 +8,7 @@ CLI to convert a postman collection to httpyac file or files.
 * sourcePath - path to the postman collection json file
 * targetPath - path to the root of the .http files, will be created if it doesn't exist
 * ignoreHeaders - optional list of headers to ignore, useful when using default headers. Supports regex patterns
-* splitRequests - determines whether to split requests one per file. Optional, defaults to true
+* splitRequests - determines whether to split requests into separate files. Optional, defaults to true
 
 ## Request Lines
 
