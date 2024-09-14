@@ -115,7 +115,7 @@ export class RequestDefinitionBuilder {
         if (!handled) {
             this._definition += '\n';
             this._definition += '// TODO: Fixup Postman test script\n';
-            this._definition += `// ${test.script.exec.join('\n//')}`;
+            this._definition += `// ${test.script.exec.join('\n// ')}`;
         }
 
         if (!handled || idProperty != '' || etagProperty != '') {
@@ -185,6 +185,15 @@ export class RequestDefinitionBuilder {
         }
 
         return this;
+    }
+
+    build(): RequestDefinitionBuilder {
+        return this.appendName()
+            .appendPreRequestScript()
+            .appendRequest()
+            .appendHeaders()
+            .appendBody()
+            .appendTestScript();
     }
 
     toString(): string {
