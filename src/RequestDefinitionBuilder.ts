@@ -13,7 +13,11 @@ export class RequestDefinitionBuilder {
     from(item: Item): RequestDefinitionBuilder {
         this._item = item;
 
-        if (this._definition.length > 0) {
+        return this;
+    }
+
+    includeSeparatorIf(condition: boolean): RequestDefinitionBuilder {
+        if (condition) {
             this._definition += '\n\n\n';
         }
 

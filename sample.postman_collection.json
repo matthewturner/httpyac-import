@@ -35,7 +35,8 @@
 									],
 									"path": [
 										"v1",
-										"comments"
+										"comments",
+										"{{commentId}}"
 									],
 									"query": []
 								}
@@ -88,6 +89,59 @@
 								],
 								"url": {
 									"raw": "{{host}}/v2/comments/{{commentId}}",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"v2",
+										"comments",
+										"{{commentId}}"
+									],
+									"query": []
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Comments",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"console.log('Some pre-request setup');"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status test\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "If-Match",
+										"value": "xxx",
+										"type": "text"
+									},
+									{
+										"key": "IgnoreThisHeader",
+										"value": "shouldnotseeme",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{host}}/v2/comments",
 									"host": [
 										"{{host}}"
 									],

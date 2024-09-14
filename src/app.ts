@@ -72,18 +72,19 @@ function processItems(items: PropertyList<Item | ItemGroup<Item>>) {
 }
 
 function processItem(item: Item) {
-    const directory = join(...targetPaths);
+    const directory = outputDirectory();
 
     if (!existsSync(directory)) {
         console.log(`Creating directory ${directory}...`);
         mkdirSync(directory, { recursive: true });
     }
 
-    const path = outputPathFor(item, directory);
+    const path = outputPathFor(item);
 
     console.log('Writing request definition...');
     const requestDefinition = new RequestDefinitionBuilder()
         .ignoreHeaders(args.ignoreHeaders)
+        .includeSeparatorIf(existsSync(path))
         .from(item)
         .build()
         .toString();
@@ -93,7 +94,17 @@ function processItem(item: Item) {
     writeFileSync(path, requestDefinition, { flag: 'a' });
 }
 
-function outputPathFor(item: Item, directory: string) {
+function outputDirectory() {
+    if (args.splitRequests) {
+        return join(...targetPaths);
+    }
+
+    return join(...targetPaths.slice(0, -1));
+}
+
+function outputPathFor(item: Item) {
+    const directory = join(...targetPaths);
+
     if (args.splitRequests) {
         const filename = `${sanitize(item.name)}.http`;
         console.log(`Creating file ${filename}...`);
