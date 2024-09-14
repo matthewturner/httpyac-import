@@ -1,6 +1,6 @@
 # httpyac-import
 
-[![CI](https://github.com/matthewturner/httpyac-import/actions/workflows/ci.yml/badge.svg)](https://github.com/matthewturner/httpyac-import/actions/workflows/ci.yml) [![CodeQL](https://github.com/matthewturner/httpyac-import/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/matthewturner/httpyac-import/actions/workflows/github-code-scanning/codeql) [![Dependabot Updates](https://github.com/matthewturner/httpyac-import/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/matthewturner/httpyac-import/actions/workflows/dependabot/dependabot-updates)
+[![CI](https://github.com/matthewturner/httpyac-import/actions/workflows/ci.yml/badge.svg)](https://github.com/matthewturner/httpyac-import/actions/workflows/ci.yml) [![CodeQL](https://github.com/matthewturner/httpyac-import/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/matthewturner/httpyac-import/actions/workflows/github-code-scanning/codeql)
 
 CLI to convert a postman collection to httpyac file or files.
 
