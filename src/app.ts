@@ -7,6 +7,8 @@ import { RequestDefinitionBuilder } from './RequestDefinitionBuilder';
 import { parseOptions } from './Options';
 import { rootLogger } from './logging';
 
+const packageInfo = JSON.parse(readFileSync('./package.json').toString());
+
 const logger = rootLogger.getSubLogger();
 
 const options = parseOptions();
@@ -15,6 +17,10 @@ const targetPaths = [options.targetPath];
 
 const sourcePostmanCollection = JSON.parse(readFileSync(options.sourcePath).toString());
 const sourceCollection = new Collection(sourcePostmanCollection);
+
+let lastTargetFilePath = '';
+
+logger.info(`HttpYac Import v${packageInfo.version}\n`);
 
 function processItems(items: PropertyList<Item | ItemGroup<Item>>) {
     for (const item of items.all()) {
@@ -33,15 +39,23 @@ function processItems(items: PropertyList<Item | ItemGroup<Item>>) {
 function processItem(item: Item) {
     const directory = outputDirectory(options, targetPaths);
 
-    if (!existsSync(directory)) {
-        logger.info(`Creating directory ${directory}...`);
-        mkdirSync(directory, { recursive: true });
+    if (options.target != 'console') {
+        if (!existsSync(directory)) {
+            logger.info(`Creating directory ${directory}...`);
+            mkdirSync(directory, { recursive: true });
+        }
     }
 
     const filePath = outputPathFor(item, options, targetPaths);
-    logger.info(`Outputting to file ${filePath}...`);
 
-    logger.info('Writing request definition...');
+    if (lastTargetFilePath == filePath) {
+        logger.debug(`Appending request ${item.name}...`);
+    } else {
+        lastTargetFilePath = filePath;
+        logger.info(`Outputting to file ${filePath}...`);
+        logger.debug(`Writing request ${item.name}...`);
+    }
+
     const requestDefinition = new RequestDefinitionBuilder()
         .ignoreHeaders(options.ignoreHeaders)
         .includeSeparatorIf(existsSync(filePath))
@@ -49,9 +63,11 @@ function processItem(item: Item) {
         .build()
         .toString();
 
-    logger.info(requestDefinition);
-
-    writeFileSync(filePath, requestDefinition, { flag: 'a' });
+    if (options.target == 'console') {
+        logger.debug(requestDefinition);
+    } else {
+        writeFileSync(filePath, requestDefinition, { flag: 'a' });
+    }
 }
 
 processItems(sourceCollection.items);
