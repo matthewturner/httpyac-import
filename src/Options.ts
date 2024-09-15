@@ -1,7 +1,7 @@
-import { Logger, ILogObj } from 'tslog'
 import { parse } from 'ts-command-line-args';
+import { rootLogger } from './logging';
 
-const logger = new Logger<ILogObj>();
+const logger = rootLogger.getSubLogger();
 
 export interface IOptions {
     sourcePath: string;

@@ -1,9 +1,6 @@
 import { IOptions } from './Options';
 import { join } from 'path';
 import { Item } from 'postman-collection';
-import { Logger, ILogObj } from 'tslog'
-
-const logger = new Logger<ILogObj>();
 
 export function sanitize(name: string) {
     return name
@@ -26,7 +23,6 @@ export function outputPathFor(item: Item, options: IOptions, targetPaths: string
 
     if (options.splitRequests) {
         const filename = `${sanitize(item.name)}.http`;
-        logger.info(`Creating file ${filename}...`);
         return join(directory, filename);
     }
 

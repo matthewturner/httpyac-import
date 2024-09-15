@@ -1,5 +1,6 @@
 import { Item } from 'postman-collection';
-import { Logger, ILogObj } from 'tslog'
+import { rootLogger } from './logging';
+import { Logger, ILogObj } from 'tslog';
 
 export class RequestDefinitionBuilder {
     _definition: string;
@@ -8,7 +9,7 @@ export class RequestDefinitionBuilder {
     _requestSeparator: string;
     _logger: Logger<ILogObj>;
 
-    constructor(logger: Logger<ILogObj> = new Logger()) {
+    constructor(logger: Logger<ILogObj> = rootLogger.getSubLogger()) {
         this._definition = '';
         this._ignoreHeaders = [];
         this._requestSeparator = '\n\n\n';

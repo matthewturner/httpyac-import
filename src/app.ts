@@ -5,9 +5,9 @@ import { Collection, ItemGroup, Item, PropertyList } from 'postman-collection';
 import { sanitize, outputDirectory, outputPathFor } from './helpers';
 import { RequestDefinitionBuilder } from './RequestDefinitionBuilder';
 import { parseOptions } from './Options';
-import { Logger, ILogObj } from 'tslog';
+import { rootLogger } from './logging';
 
-const logger = new Logger<ILogObj>();
+const logger = rootLogger.getSubLogger();
 
 const options = parseOptions();
 
@@ -38,19 +38,20 @@ function processItem(item: Item) {
         mkdirSync(directory, { recursive: true });
     }
 
-    const path = outputPathFor(item, options, targetPaths);
+    const filePath = outputPathFor(item, options, targetPaths);
+    logger.info(`Outputting to file ${filePath}...`);
 
     logger.info('Writing request definition...');
     const requestDefinition = new RequestDefinitionBuilder()
         .ignoreHeaders(options.ignoreHeaders)
-        .includeSeparatorIf(existsSync(path))
+        .includeSeparatorIf(existsSync(filePath))
         .from(item)
         .build()
         .toString();
 
     logger.info(requestDefinition);
 
-    writeFileSync(path, requestDefinition, { flag: 'a' });
+    writeFileSync(filePath, requestDefinition, { flag: 'a' });
 }
 
 processItems(sourceCollection.items);
