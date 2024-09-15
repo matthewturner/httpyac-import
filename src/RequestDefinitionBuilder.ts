@@ -1,15 +1,19 @@
 import { Item } from 'postman-collection';
+import { rootLogger } from './logging';
+import { Logger, ILogObj } from 'tslog';
 
 export class RequestDefinitionBuilder {
     _definition: string;
     _item: Item
     _ignoreHeaders: string[];
     _requestSeparator: string;
+    _logger: Logger<ILogObj>;
 
-    constructor() {
+    constructor(logger: Logger<ILogObj> = rootLogger.getSubLogger()) {
         this._definition = '';
         this._ignoreHeaders = [];
         this._requestSeparator = '\n\n\n';
+        this._logger = logger;
     }
 
     from(item: Item): RequestDefinitionBuilder {
@@ -47,7 +51,7 @@ export class RequestDefinitionBuilder {
         }
 
         if (preRequestTest.script.exec.length == 1 && preRequestTest.script.exec[0] == '') {
-            console.log('Pre request script is not set');
+            this._logger.warn('Pre request script is not set');
             return this;
         }
 
@@ -156,7 +160,7 @@ export class RequestDefinitionBuilder {
     shouldInclude(header: string): boolean {
         for (const ignoreHeader of this._ignoreHeaders) {
             if (header.match(ignoreHeader)) {
-                console.log(`Ignoring header ${header}...`);
+                this._logger.info(`Ignoring header ${header}...`);
                 return false;
             }
         }
