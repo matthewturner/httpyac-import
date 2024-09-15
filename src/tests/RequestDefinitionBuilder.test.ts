@@ -1,9 +1,13 @@
 import { RequestDefinitionBuilder } from '../RequestDefinitionBuilder';
 import { Item, ItemGroup, Collection, Url, Header, RequestBody, Event } from 'postman-collection';
 import { readFileSync } from 'fs';
+import { Logger, ILogObj } from 'tslog';
 
 describe('Request Definition Builder', () => {
     let getRequest: Item;
+    let target: RequestDefinitionBuilder;
+
+    const logger = new Logger<ILogObj>({ minLevel: 6 });
 
     beforeEach(() => {
         const sourcePostmanCollection = JSON.parse(readFileSync('sample.postman_collection.json').toString());
@@ -13,13 +17,14 @@ describe('Request Definition Builder', () => {
         const v1Group = <ItemGroup<Item>>rootGroup.items.all().at(0);
 
         getRequest = <Item>v1Group.items.all().at(0);
+
+        target = new RequestDefinitionBuilder(logger);
     });
 
     test('Splits request line', () => {
         getRequest.request.url = new Url('http://host.com?color=red');
 
-        const target = new RequestDefinitionBuilder()
-            .from(getRequest)
+        target.from(getRequest)
             .appendRequest();
 
         const actual = target.toString();
@@ -31,8 +36,7 @@ describe('Request Definition Builder', () => {
     test('Splits request line with path', () => {
         getRequest.request.url = new Url('http://host.com/items?color=red');
 
-        const target = new RequestDefinitionBuilder()
-            .from(getRequest)
+        target.from(getRequest)
             .appendRequest();
 
         const actual = target.toString();
@@ -44,8 +48,7 @@ describe('Request Definition Builder', () => {
     test('Splits request line with multiple query parameters', () => {
         getRequest.request.url = new Url('http://host.com?color=red&flavor=sweet');
 
-        const target = new RequestDefinitionBuilder()
-            .from(getRequest)
+        target.from(getRequest)
             .appendRequest();
 
         const actual = target.toString();
@@ -58,8 +61,7 @@ describe('Request Definition Builder', () => {
     test('Handles missing headers', () => {
         getRequest.request.headers = undefined;
 
-        const target = new RequestDefinitionBuilder()
-            .from(getRequest)
+        target.from(getRequest)
             .appendHeaders();
 
         const actual = target.toString();
@@ -75,8 +77,7 @@ describe('Request Definition Builder', () => {
         header.value = 'SomeValue';
         getRequest.request.headers.add(header);
 
-        const target = new RequestDefinitionBuilder()
-            .from(getRequest)
+        target.from(getRequest)
             .appendHeaders();
 
         const actual = target.toString();
@@ -97,8 +98,7 @@ describe('Request Definition Builder', () => {
         header2.value = 'SomeValue2';
         getRequest.request.headers.add(header2);
 
-        const target = new RequestDefinitionBuilder()
-            .from(getRequest)
+        target.from(getRequest)
             .appendHeaders();
 
         const actual = target.toString();
@@ -119,8 +119,7 @@ describe('Request Definition Builder', () => {
         header2.value = 'SomeValue2';
         getRequest.request.headers.add(header2);
 
-        const target = new RequestDefinitionBuilder()
-            .ignoreHeaders(['SomeHeader1'])
+        target.ignoreHeaders(['SomeHeader1'])
             .from(getRequest)
             .appendHeaders();
 
@@ -147,8 +146,7 @@ describe('Request Definition Builder', () => {
         header3.value = 'SomeValue3';
         getRequest.request.headers.add(header3);
 
-        const target = new RequestDefinitionBuilder()
-            .ignoreHeaders(['Some.*'])
+        target.ignoreHeaders(['Some.*'])
             .from(getRequest)
             .appendHeaders();
 
@@ -160,8 +158,7 @@ describe('Request Definition Builder', () => {
     test('Handles missing body', () => {
         getRequest.request.body = undefined;
 
-        const target = new RequestDefinitionBuilder()
-            .from(getRequest)
+        target.from(getRequest)
             .appendBody();
 
         const actual = target.toString();
@@ -172,8 +169,7 @@ describe('Request Definition Builder', () => {
     test('Adds body with default content-type header', () => {
         getRequest.request.body = new RequestBody({ mode: 'json', raw: '{ "some": "value" }' });
 
-        const target = new RequestDefinitionBuilder()
-            .from(getRequest)
+        target.from(getRequest)
             .appendBody();
 
         const actual = target.toString();
@@ -190,8 +186,7 @@ describe('Request Definition Builder', () => {
         header1.value = 'application/json';
         getRequest.request.headers.add(header1);
 
-        const target = new RequestDefinitionBuilder()
-            .from(getRequest)
+        target.from(getRequest)
             .appendHeaders()
             .appendBody();
 
@@ -203,8 +198,7 @@ describe('Request Definition Builder', () => {
     test('Handles missing test script', () => {
         getRequest.events.clear();
 
-        const target = new RequestDefinitionBuilder()
-            .from(getRequest)
+        target.from(getRequest)
             .appendTestScript();
 
         const actual = target.toString();
@@ -227,8 +221,7 @@ describe('Request Definition Builder', () => {
         });
         getRequest.events.add(event1);
 
-        const target = new RequestDefinitionBuilder()
-            .from(getRequest)
+        target.from(getRequest)
             .appendTestScript();
 
         const actual = target.toString();
@@ -251,8 +244,7 @@ describe('Request Definition Builder', () => {
         });
         getRequest.events.add(event1);
 
-        const target = new RequestDefinitionBuilder()
-            .from(getRequest)
+        target.from(getRequest)
             .appendTestScript();
 
         const actual = target.toString();
@@ -280,8 +272,7 @@ describe('Request Definition Builder', () => {
         });
         getRequest.events.add(event1);
 
-        const target = new RequestDefinitionBuilder()
-            .from(getRequest)
+        target.from(getRequest)
             .appendTestScript();
 
         const actual = target.toString();
@@ -307,8 +298,7 @@ describe('Request Definition Builder', () => {
         });
         getRequest.events.add(event1);
 
-        const target = new RequestDefinitionBuilder()
-            .from(getRequest)
+        target.from(getRequest)
             .appendTestScript();
 
         const actual = target.toString();
@@ -325,8 +315,7 @@ describe('Request Definition Builder', () => {
         const event1 = new Event({ listen: 'test', script: { exec: ['console.log("something");'] } });
         getRequest.events.add(event1);
 
-        const target = new RequestDefinitionBuilder()
-            .from(getRequest)
+        target.from(getRequest)
             .appendTestScript();
 
         const actual = target.toString();
@@ -341,8 +330,7 @@ describe('Request Definition Builder', () => {
     test('Handles missing pre-request script', () => {
         getRequest.events.clear();
 
-        const target = new RequestDefinitionBuilder()
-            .from(getRequest)
+        target.from(getRequest)
             .appendPreRequestScript();
 
         const actual = target.toString();
@@ -356,8 +344,7 @@ describe('Request Definition Builder', () => {
         const event1 = new Event({ listen: 'prerequest', script: { exec: [''] } });
         getRequest.events.add(event1);
 
-        const target = new RequestDefinitionBuilder()
-            .from(getRequest)
+        target.from(getRequest)
             .appendPreRequestScript();
 
         const actual = target.toString();
@@ -371,8 +358,7 @@ describe('Request Definition Builder', () => {
         const event1 = new Event({ listen: 'prerequest', script: { exec: ['console.log("something");'] } });
         getRequest.events.add(event1);
 
-        const target = new RequestDefinitionBuilder()
-            .from(getRequest)
+        target.from(getRequest)
             .appendPreRequestScript();
 
         const actual = target.toString();
@@ -385,8 +371,7 @@ describe('Request Definition Builder', () => {
     });
 
     test('Adds separator if condition is met', () => {
-        const target = new RequestDefinitionBuilder()
-            .from(getRequest)
+        target.from(getRequest)
             .includeSeparatorIf(true);
 
         const actual = target.toString();
@@ -395,8 +380,7 @@ describe('Request Definition Builder', () => {
     });
 
     test('Adds separator if target item has changed', () => {
-        const target = new RequestDefinitionBuilder()
-            .from(getRequest)
+        target.from(getRequest)
             .appendName()
             .from(getRequest);
 
@@ -417,8 +401,7 @@ describe('Request Definition Builder', () => {
         getRequest.request.url = new Url('http://host.com?color=red');
         getRequest.request.body = new RequestBody({ mode: 'json', raw: '{ "some": "value" }' });
 
-        const target = new RequestDefinitionBuilder()
-            .from(getRequest)
+        target.from(getRequest)
             .build();
 
         const actual = target.toString();
