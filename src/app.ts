@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 
-import { writeFileSync, readFileSync, mkdirSync, existsSync } from 'fs';
+import { writeFileSync, readFileSync, mkdirSync, existsSync, rmSync } from 'fs';
 import { Collection, ItemGroup, Item, PropertyList } from 'postman-collection';
 import { sanitize, outputDirectory, outputPathFor } from './helpers';
 import { RequestDefinitionBuilder } from './RequestDefinitionBuilder';
@@ -11,7 +11,16 @@ const packageInfo = JSON.parse(readFileSync('./package.json').toString());
 
 const logger = rootLogger.getSubLogger();
 
+logger.silly(`HttpYac Import v${packageInfo.version}`);
+
 const options = parseOptions();
+
+if (options.purgeTargetPath) {
+    if (existsSync(options.targetPath)) {
+        logger.warn(`Purging target path ${options.targetPath}...`)
+        rmSync(options.targetPath, { recursive: true });
+    }
+}
 
 const targetPaths = [options.targetPath];
 
@@ -19,8 +28,6 @@ const sourcePostmanCollection = JSON.parse(readFileSync(options.sourcePath).toSt
 const sourceCollection = new Collection(sourcePostmanCollection);
 
 let lastTargetFilePath = '';
-
-logger.info(`HttpYac Import v${packageInfo.version}\n`);
 
 function processItems(items: PropertyList<Item | ItemGroup<Item>>) {
     for (const item of items.all()) {

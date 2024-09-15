@@ -7,11 +7,12 @@ CLI to convert a postman collection to httpyac file or files.
 ## Usage
 `httpyac-import --sourcePath=sample.postman_collection.json --targetPath=output`
 
-* sourcePath - path to the postman collection json file
+* sourcePath - path to the Postman collection json file
 * targetPath - path to the root of the .http files, will be created if it doesn't exist
-* ignoreHeaders - optional list of headers to ignore, useful when using default headers. Supports regex patterns
+* ignoreHeaders - optional list of headers to ignore, useful when using default headers. Supports regex patterns (eg SomeHeader.*)
 * splitRequests - determines whether to split requests into separate files. Optional, defaults to true
 * target - either file or console, defaults to file
+* purgeTargetPath - determines whether to delete target path. Optional, defaults to false
 
 ## Request Lines
 
@@ -111,9 +112,6 @@ There is no current support for:
 
 * Non-javascript scripting languages
 * Non-JSON body in POST/PUT requests
-
-## Known Issues
-* Mandatory parameters - the sourcePath and targetPath should be mandatory but [ts-command-line-args ](https://www.npmjs.com/package/ts-command-line-args) seems to demand they be set as optional
 
 ## Running from the repository
 `npm run import -- -- --sourcePath=sample.postman_collection.json --targetPath=output`

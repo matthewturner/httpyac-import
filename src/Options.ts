@@ -9,6 +9,7 @@ export interface IOptions {
     target: string;
     ignoreHeaders?: string[];
     splitRequests?: boolean,
+    purgeTargetPath?: boolean,
     help?: boolean;
 }
 
@@ -33,6 +34,9 @@ export function parseOptions(): IOptions {
         },
         splitRequests: {
             type: Boolean, alias: 'f', optional: true as const, description: 'Determines whether to split requests into separate files [default: true]'
+        },
+        purgeTargetPath: {
+            type: Boolean, alias: 'p', optional: true as const, description: 'Deletes target path and all contents [default: false]'
         },
         help: {
             type: Boolean, optional: true, alias: 'h', description: 'Prints this usage guide'
@@ -60,8 +64,12 @@ export function parseOptions(): IOptions {
     }
 
     if (options.splitRequests === undefined) {
-        logger.warn('One file will be created per request');
+        logger.warn('Requests will be split into separate files. Control with --splitRequests=[true|false]');
         options.splitRequests = true;
+    }
+
+    if (options.purgeTargetPath === undefined) {
+        options.purgeTargetPath = false;
     }
 
     return options;
