@@ -1,18 +1,20 @@
-import { Logger, ILogObj } from 'tslog';
+import { Logger, ILogObj, IMeta } from 'tslog';
+import chalk = require('chalk');
 
-export const rootLogger = new Logger<ILogObj>({
-    prettyLogTemplate: "{{logLevelName}}\t",
-    prettyLogStyles: {
-        logLevelName: {
-            "*": ["bold", "black", "bgWhiteBright", "dim"],
-            SILLY: ["bold", "white"],
-            TRACE: ["bold", "whiteBright"],
-            DEBUG: ["bold", "green"],
-            INFO: ["bold", "blue"],
-            WARN: ["bold", "yellow"],
-            ERROR: ["bold", "red"],
-            FATAL: ["bold", "redBright"],
-        }
+export const rootLogger = new Logger<ILogObj>({ type: 'hidden' });
+
+rootLogger.attachTransport((logObj: ILogObj) => {
+    const meta = <IMeta>logObj._meta;
+    switch (meta.logLevelId) {
+        case 3:
+            console.log(chalk.blueBright(logObj[0]));
+            break;
+        case 4:
+            console.log(chalk.yellowBright(logObj[0]));
+            break;
+        default:
+            console.log(logObj[0]);
+            break;
     }
 });
 

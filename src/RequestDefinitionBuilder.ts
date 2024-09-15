@@ -160,7 +160,7 @@ export class RequestDefinitionBuilder {
     shouldInclude(header: string): boolean {
         for (const ignoreHeader of this._ignoreHeaders) {
             if (header.match(ignoreHeader)) {
-                this._logger.info(`Ignoring header ${header}...`);
+                this._logger.debug(`Ignoring header ${header}...`);
                 return false;
             }
         }

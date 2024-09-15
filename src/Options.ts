@@ -6,6 +6,7 @@ const logger = rootLogger.getSubLogger();
 export interface IOptions {
     sourcePath: string;
     targetPath: string;
+    target: string;
     ignoreHeaders?: string[];
     splitRequests?: boolean,
     help?: boolean;
@@ -17,7 +18,10 @@ export function parseOptions(): IOptions {
             type: String, alias: 's', optional: true as const, description: 'Path to the exported postman_collection.json'
         },
         targetPath: {
-            type: String, alias: 'd', optional: true as const, description: 'Path to the root directory to output the .http files'
+            type: String, alias: 't', optional: true as const, description: 'Path to the root directory to output the .http files'
+        },
+        target: {
+            type: String, alias: 'o', optional: true as const, description: 'Either console or file [default: file]'
         },
         ignoreHeaders: {
             type: String,
@@ -44,9 +48,15 @@ export function parseOptions(): IOptions {
         process.exit(1);
     }
 
-    if (options.targetPath === undefined) {
-        logger.error('Target path must be supplied with --targetPath=path');
-        process.exit(2);
+    if (options.target === undefined) {
+        options.target = 'file';
+    }
+
+    if (options.target === 'file') {
+        if (options.targetPath === undefined) {
+            logger.error('Target path must be supplied with --targetPath=path');
+            process.exit(2);
+        }
     }
 
     if (options.splitRequests === undefined) {
